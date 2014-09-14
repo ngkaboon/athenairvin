@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" " http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd ">
+<html xmlns=" http://www.w3.org/1999/xhtml ">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Request json test</title> 
+<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<script src="http://code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">
+
+<script>
+// starting amount of gold
+
+var gold = 100;
+var costWorker = 5;
+var costMachine = 10;
+var machine=0;
+var worker=0;
+var hidden=false;
+
+function printCannotBuy(item) {
+    $("#action").text("Cannot buy "+item+" because you are out of gold!");
+}
+
+function buyWorker() {
+    if (gold >= costWorker) {
+        // math part
+        gold = gold - costWorker;
+        worker = worker + 1;
+        
+        // display part
+        $("#money").text(gold);
+        $("#action").text("Bought worker");
+        $("#workers").text(worker);
+
+
+    }
+    else { 
+        printCannotBuy("worker");
+
+    }
+}
+
+function buyMachine() {
+//    alert("Buying machine!");
+    if (gold >= costMachine) {
+        gold = gold - costMachine;
+        machine = machine + 1;
+        $("#money").text(gold);
+        $("#action").text("Bought machine");
+        $("#machines").text(machine);
+    }
+     else { 
+        printCannotBuy("machine");
+    }
+
+}
+
+function showhide() {
+    $("#menu").toggle();
+}
+        
+
+$(document).ready(function(){ 
+    $("#worker").on("click", buyWorker);
+    $("#machine").on("click", buyMachine);
+    $("#showhide").on("click", showhide);
+    $("#step2").on("click", function() {
+        $("#menu").hide();
+        $("#menu2").show();
+    });
+    $("#step3").on("click", function() {
+        $("#menu2").hide();
+        $("#menu3").show();
+    });
+    $("#step1").on("click", function() {
+        $("#menu3").hide();
+        $("#menu").show();
+    });
+    $("#money").text(gold);
+    $("#workers").text(worker);
+    $("#machines").text(machine);
+    $("#menu2").hide();
+    $("#menu3").hide();
+    
+});
+</script>
+</head>
+
+<body>
+    <p id="menu">
+        <label id="question">What do you want to buy? </label> <br>
+        <a href="#" id="worker">worker (5 gold)</a> <br>
+        <a href="#" id="machine">machine (10 gold)</a><br>
+        <a href="#" id="step2">Done with buying resource</a><br>
+    </p>
+    <p id="menu2">
+        <a href="#" id="makephone">Make a phone</a> <br>
+        <a href="#" id="step3">Done with making phone</a><br>
+    
+    </p>
+    <p id="menu3">
+        <a href="#" id="sellphone">Sell a phone</a> <br>
+        <a href="#" id="step1">Done with selling phone</a><br>
+    
+    </p>
+    <! <a href="#" id="showhide"> <!- Show or Hide Menu</a><br>
+    gold :  
+    <label id="money"></label> <br>
+   
+    last action : 
+    <label id="action"></label> <br> 
+
+    workers :
+    <label id="workers"></label> <br>
+    
+    machine :
+    <label id="machines"></label> <br>
+
+</body>
+</html> 
+
+
