@@ -48,7 +48,7 @@ function buyMachine() {
         gold = gold - costMachine;
         machine = machine + 1;
         $("#money").text(gold);
-        $("#action").text("Bought machine");
+        $("#action").text("Bought machine"); 
         $("#machines").text(machine);
     }
      else { 
@@ -58,7 +58,11 @@ function buyMachine() {
 
 function makePhone() {
     alert("Make a phone!");
-}
+     phone = phone + 1 ;  
+    $("#phones").text(phone);
+    $("#action").text("Phone made");
+      
+} 
 
 function showhide() {
     $("#menu").toggle();
