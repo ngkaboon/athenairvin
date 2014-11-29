@@ -1,6 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" " http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd ">
 <html xmlns=" http://www.w3.org/1999/xhtml ">
 <head>
+<link rel="stylesheet" type="text/css" href="game.css">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>AthenaIrvin</title> 
 <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
@@ -14,6 +15,7 @@ var costWorker = 5;
 var costMachine = 10;
 var machine=0;
 var worker=0;
+var phone=0;
 var hidden=false;
 
 function printCannotBuy(item) {
@@ -30,6 +32,7 @@ function buyWorker() {
         $("#money").text(gold);
         $("#action").text("Bought worker");
         $("#workers").text(worker);
+
 
 
     }
@@ -51,7 +54,10 @@ function buyMachine() {
      else { 
         printCannotBuy("machine");
     }
+}
 
+function makePhone() {
+    alert("Make a phone!");
 }
 
 function showhide() {
@@ -60,9 +66,13 @@ function showhide() {
         
 
 $(document).ready(function(){ 
+    // call backs for game actions
     $("#worker").on("click", buyWorker);
     $("#machine").on("click", buyMachine);
     $("#showhide").on("click", showhide);
+    $("#makephone").on("click",makePhone);
+    
+    // move to next step
     $("#step2").on("click", function() {
         $("#menu").hide();
         $("#menu2").show();
@@ -75,9 +85,14 @@ $(document).ready(function(){
         $("#menu3").hide();
         $("#menu").show();
     });
+    
+    // display new screen
     $("#money").text(gold);
     $("#workers").text(worker);
     $("#machines").text(machine);
+    $("#phones").text(phone);
+
+    // hide rest of menus first
     $("#menu2").hide();
     $("#menu3").hide();
     
@@ -115,14 +130,16 @@ $(document).ready(function(){
     machine :
     <label id="machines"></label> <br>
     
-    
+    phone :
+    <label id="phones"></label> <br>
+
+<!---    
     <br>
     <hr>
     <h4>Dev Blog</h4>
     <p>
     This was the initial start
-    </p>
-
+    </p> --->
 </body>
 </html> 
 
