@@ -17,6 +17,9 @@ var machine=0;
 var worker=0;
 var phone=0;
 var hidden=false;
+var round=1;
+
+var MAXGOLD=10;
 
 function printCannotBuy(item) {
     $("#action").text("Cannot buy "+item+" because you are out of gold!");
@@ -66,13 +69,15 @@ function makePhone() {
 
 function sellPhone() {
 //  alert("Sell a phone!");
+    var earn;
     if (phone > 0) {
         $("#phone"+phone).remove();
         phone = phone - 1;  
-        gold = gold + 5;
+        earn = Math.floor((Math.random() * MAXGOLD) + 1);
+        gold = gold + earn;
         $("#phones").text(phone);
         $("#money").text(gold);
-        $("#action").text("Phone sold and 5 gold earned");
+        $("#action").text("Phone sold and "+earn+" gold earned");
     }
 }
 
@@ -98,11 +103,15 @@ $(document).ready(function(){
     $("#step3").on("click", function() {
         $("#menu2").hide();
         $("#menu3").show();
+        round = round + 1;
+        $("#round").text(round);
     });
     $("#step1").on("click", function() {
         $("#menu3").hide();
         $("#menu").show();
     });
+    $("#round").text(round);
+
     
     // display new screen
     $("#money").text(gold);
@@ -119,6 +128,8 @@ $(document).ready(function(){
 </head>
 
 <body>
+    Game round:
+    <label id="round"></label><br>
     <p id="menu">
         <label id="question">What do you want to buy? </label> <br>
         <a href="#" id="worker">worker (5 gold)</a> <br>
@@ -149,9 +160,8 @@ $(document).ready(function(){
     <label id="machines"></label> <br>
     
     phone :
-    <span id="phonesGfx"></span><br>
-
     <label id="phones"></label> <br>
+    <span id="phonesGfx"></span><br>
 
 <!---    
     <br>
