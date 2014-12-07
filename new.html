@@ -11,6 +11,7 @@
 <script>
 // starting amount of gold
 var gold = 20;
+var highestgold=0;
 var costWorker = 5;
 var costMachine = 10;
 var machine=0;
@@ -19,12 +20,14 @@ var health=0;
 var phone=0;
 var hidden=false;
 var round=1;
+var time=20;
+var timer;
 
 var MAXGOLD=10;
 var MAXWORKERHEALTH=10;
 var MAXRECUPERATEHEALTH=3;
-var CHANCEWORKERRUN = 90;
-var PERCENT=100;
+var PERCENTWORKERRUN = 90;
+var PERCENT=100; 
 
 function printCannotBuy(item) {
     $("#action").text("Cannot buy "+item+" because you are out of gold!");
@@ -51,13 +54,19 @@ function buyWorker() {
     }
 }
 
-function nextRound(round) {
+function updateGold() {
+    if (gold > highestgold) {
+        highestgold = gold;
+        $("#highmoney").text(highestgold);
+    }
+}
+function nextRound() {
 //    alert("Next Round");
-    round = round + 1;
-    var seed=gameRandom(PERCENT); 
-    if (worker > 1  && seed <= CHANCEWORKERRUN) {
-        worker = worker - 1;
-        alert("Worker ran away!");
+    var workerRun =  Math.floor(gameRandom(PERCENTWORKERRUN)*worker/PERCENT); 
+    var runMsg = "";
+    if (worker > workerRun) {
+        worker = worker - workerRun;
+        runMsg = workerRun + " worker(s) ran away! ";
         $("#workers").text(worker);
     }
     var recuperate = gameRandom(MAXRECUPERATEHEALTH*worker);
@@ -65,10 +74,8 @@ function nextRound(round) {
     if (health > MAXWORKERHEALTH*worker) {
 	    health = MAXWORKERHEALTH*worker;
     }
-    $("#action").text("Recuperated worker health = " + recuperate);
-    $("#round").text(round);
+    $("#action").text(runMsg + "Recuperated worker health = " + recuperate);
     $("#healthWorkers").text(health);
-    return round;
 }
 
 function buyMachine() {
@@ -115,22 +122,49 @@ function sellPhone() {
         $("#phones").text(phone);
         $("#money").text(gold);
         $("#action").text("Phone sold and "+earn+" gold earned");
+        if (gold > highestgold) {
+            highestgold = gold;
+            $("#highmoney").text(highestgold);
+        }
     }
 }
 
 function showhide() {
     $("#menu").toggle();
 }
-        
+       
+function countDown() {
+    if (time > 0 ) {
+        time = time - 1;
+        $("#timeleft").text(time);
 
+        nextRound();
+        if (time == 0) {
+            clearInterval(timer);
+            $("#menu").hide();
+            $("#menu2").show();
+
+        }
+    }
+}
+
+function gameReset() {
+
+    gold = 20;
+    worker=0;
+    health=0;
+    phone=0;
+    time=20;
+    $("#money").text(gold);
+    $("#workers").text(worker);
+    $("#healthWorkers").text(health);
+    $("#phones").text(phone);
+    $("#timeleft").text(time);
+    timer = setInterval(function() {countDown();},1000);
+    $("#phonesGfx").empty();
+
+}
 $(document).ready(function(){ 
-    // call backs for game actions
-    $("#worker").on("click", buyWorker);
-    $("#machine").on("click", buyMachine);
-    $("#showhide").on("click", showhide);
-    $("#makephone").on("click", makePhone);
-    $("#sellphone").on("click", sellPhone);
-
     
     // move to next step
     $("#step2").on("click", function() {
@@ -142,23 +176,29 @@ $(document).ready(function(){
         $("#menu3").show();
     });
     $("#step1").on("click", function() {
-        $("#menu3").hide();
+        $("#menu2").hide();
         $("#menu").show();
-	    round = nextRound(round); 
+        gameReset();
     });
     $("#round").text(round);
+    gameReset();
+    highestgold = gold;
+    $("#highmoney").text(highestgold);
 
     
     // display new screen
-    $("#money").text(gold);
-    $("#workers").text(worker);
-    $("#healthWorkers").text(health);
-    $("#machines").text(machine);
-    $("#phones").text(phone);
 
     // hide rest of menus first
     $("#menu2").hide();
     $("#menu3").hide();
+    
+    // call backs for game actions
+    $("#worker").on("click", buyWorker);
+    $("#machine").on("click", buyMachine);
+    $("#showhide").on("click", showhide);
+    $("#makephone").on("click", makePhone);
+    $("#sellphone").on("click", sellPhone);
+
     
 });
 </script>
@@ -167,15 +207,17 @@ $(document).ready(function(){
 <body>
     Game round:
     <label id="round"></label><br>
+    Time left:
+    <label id="timeleft"></label><br>
+
     <p id="menu">
-        <label id="question">What do you want to buy? </label> <br>
-        <a href="#" id="worker">worker (5 gold)</a> <br>
-        <a href="#" id="machine">machine (10 gold)</a><br>
-        <a href="#" id="step2">Done with buying resource</a><br>
+        <a href="#" id="worker">Buy worker (5 gold)</a> <br>
+        <a href="#" id="makephone">Make a phone</a> <br>
+        <a href="#" id="sellphone">Sell a phone</a> <br>
     </p>
     <p id="menu2">
-        <a href="#" id="makephone">Make a phone</a> <br>
-        <a href="#" id="step3">Done with making phone</a><br>
+        THE END! <br>
+        <a href="#" id="step1">Restart the game</a><br>
     
     </p>
     <p id="menu3">
@@ -184,7 +226,13 @@ $(document).ready(function(){
     
     </p>
     <! <a href="#" id="showhide"> <!- Show or Hide Menu</a><br>
+    
+    
+    highest gold : 
+    <label id="highmoney"></label> <br>
+
     gold :  
+
     <label id="money"></label> <br>
    
     last action : 
@@ -196,8 +244,6 @@ $(document).ready(function(){
     health of workers :
     <label id="healthWorkers"></label> <br>
 
-    machine :
-    <label id="machines"></label> <br>
     
     phone :
     <label id="phones"></label> <br>
