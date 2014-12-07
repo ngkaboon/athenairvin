@@ -10,16 +10,21 @@
 
 <script>
 // starting amount of gold
-var gold = 200;
+var gold = 20;
 var costWorker = 5;
 var costMachine = 10;
 var machine=0;
 var worker=0;
+var health=0;
 var phone=0;
 var hidden=false;
 var round=1;
 
 var MAXGOLD=10;
+var MAXWORKERHEALTH=10;
+var MAXRECUPERATEHEALTH=3;
+var CHANCEWORKERRUN = 90;
+var PERCENT=100;
 
 function printCannotBuy(item) {
     $("#action").text("Cannot buy "+item+" because you are out of gold!");
@@ -30,12 +35,13 @@ function buyWorker() {
         // math part
         gold = gold - costWorker;
         worker = worker + 1;
+	    health = health + MAXWORKERHEALTH;
         
         // display part
         $("#money").text(gold);
         $("#action").text("Bought worker");
         $("#workers").text(worker);
-
+    	$("#healthWorkers").text(health);
 
 
     }
@@ -43,6 +49,26 @@ function buyWorker() {
         printCannotBuy("worker");
 
     }
+}
+
+function nextRound(round) {
+//    alert("Next Round");
+    round = round + 1;
+    var seed=gameRandom(PERCENT); 
+    if (worker > 1  && seed <= CHANCEWORKERRUN) {
+        worker = worker - 1;
+        alert("Worker ran away!");
+        $("#workers").text(worker);
+    }
+    var recuperate = gameRandom(MAXRECUPERATEHEALTH*worker);
+    health = recuperate + health;
+    if (health > MAXWORKERHEALTH*worker) {
+	    health = MAXWORKERHEALTH*worker;
+    }
+    $("#action").text("Recuperated worker health = " + recuperate);
+    $("#round").text(round);
+    $("#healthWorkers").text(health);
+    return round;
 }
 
 function buyMachine() {
@@ -61,11 +87,22 @@ function buyMachine() {
 
 function makePhone() {
 //  alert("Make a phone!");
-    phone = phone + 1 ;  
-    $("#phones").text(phone);
-    $("#phonesGfx").append("<img id=\"phone"+phone+"\" src=\"iphone.png\"></img>");
-    $("#action").text("Phone made");
+    if (health >= 5) {
+    	phone = phone + 1 ;  
+	health = health - 5;
+    	$("#phones").text(phone);
+	$("#healthWorkers").text(health);
+    	$("#phonesGfx").append("<img id=\"phone"+phone+"\" src=\"iphone.png\"></img>");
+    	$("#action").text("Phone made");
+    }
+    else {
+	$("#action").text("Workers are all tired!");
+    }  
 } 
+
+function gameRandom(value) {
+    return Math.floor((Math.random() * value) +1);
+}
 
 function sellPhone() {
 //  alert("Sell a phone!");
@@ -73,7 +110,7 @@ function sellPhone() {
     if (phone > 0) {
         $("#phone"+phone).remove();
         phone = phone - 1;  
-        earn = Math.floor((Math.random() * MAXGOLD) + 1);
+        earn = gameRandom(MAXGOLD)  ;
         gold = gold + earn;
         $("#phones").text(phone);
         $("#money").text(gold);
@@ -103,12 +140,11 @@ $(document).ready(function(){
     $("#step3").on("click", function() {
         $("#menu2").hide();
         $("#menu3").show();
-        round = round + 1;
-        $("#round").text(round);
     });
     $("#step1").on("click", function() {
         $("#menu3").hide();
         $("#menu").show();
+	    round = nextRound(round); 
     });
     $("#round").text(round);
 
@@ -116,6 +152,7 @@ $(document).ready(function(){
     // display new screen
     $("#money").text(gold);
     $("#workers").text(worker);
+    $("#healthWorkers").text(health);
     $("#machines").text(machine);
     $("#phones").text(phone);
 
@@ -155,7 +192,10 @@ $(document).ready(function(){
 
     workers :
     <label id="workers"></label> <br>
-    
+
+    health of workers :
+    <label id="healthWorkers"></label> <br>
+
     machine :
     <label id="machines"></label> <br>
     
